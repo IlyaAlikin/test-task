@@ -1,4 +1,5 @@
 <template>
+  <div class="">Список персонажей</div>
   <div v-for="item in state.data">
     <div class="card">
       <div class="card__name">

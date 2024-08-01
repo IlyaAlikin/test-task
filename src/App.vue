@@ -1,9 +1,15 @@
 <template>
-  <nav class="nav">
-    <router-link to="/">List</router-link>
-    <router-link to="/edit">Edit</router-link>
-  </nav>
-  <RouterView />
+  <div class="wrapper">
+    <nav class="nav">
+      <router-link to="/">Список персонажей</router-link>
+      <router-link to="/edit">Добавить персонажа</router-link>
+    </nav>
+    <main class="main" id="main">
+      <div class="main__container">
+        <RouterView />
+      </div>
+    </main>
+  </div>
 </template>
 <script setup lang="ts">
 import { onMounted } from "vue";
