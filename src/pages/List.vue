@@ -1,19 +1,21 @@
 <template>
   <div class="">Список персонажей</div>
-  <div class="list" v-if="state.data">
-    <div v-for="item in state.data" class="card">
-      <div class="card__name">
-        {{ item.name }}
-      </div>
-      <div class="card__birth_year">
-        {{ item.birth_year }}
-      </div>
-      <div class="starship">
-        <div v-if="item.starships.length >= 1">
-          <OwnSelect :link="item.starships[0]" />
+  <div class="" v-if="state.data">
+    <div class="list">
+      <div v-for="item in state.data" class="card">
+        <div class="card__name">
+          {{ item.name }}
         </div>
-        <!-- {{ item.starships[0] }} -->
+        <div class="card__birth_year">
+          {{ item.birth_year }}
+        </div>
+        <div class="starship">
+          <div v-if="item.starships.length >= 1">
+            <OwnSelect :link="item.starships[0]" />
+          </div>
+        </div>
       </div>
+      <div class="add_button">+</div>
     </div>
   </div>
 </template>

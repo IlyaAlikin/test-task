@@ -1,7 +1,6 @@
 <template>
-  {{ props.link }}
-  <div class="" v-if="!state.isLoading">
-    <div>{{ state.data }}</div>
+  <div v-if="!state.isLoading">
+    <div>{{ state.data.name }}</div>
   </div>
 </template>
 <script setup lang="ts">

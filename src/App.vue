@@ -4,7 +4,7 @@
       <div class="container">
         <nav class="nav">
           <router-link to="/">Список персонажей</router-link>
-          <router-link to="/edit">Добавить персонажа</router-link>
+          <router-link to="/edit">Изменить персонажа</router-link>
         </nav>
       </div>
     </header>
