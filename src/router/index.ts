@@ -1,18 +1,18 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Input from "../components/Input.vue";
-import Select from "../components/Select.vue";
+import List from "../pages/List.vue";
+import Edit from "../pages/List.vue";
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: "/input",
-      name: "EventDetails",
-      component: Input,
+      path: "/",
+      name: "List",
+      component: List,
     },
     {
-      path: "/select",
-      name: "select",
-      component: Select,
+      path: "/edit",
+      name: "Edit",
+      component: Edit,
     },
   ],
 });

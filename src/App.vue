@@ -1,6 +1,7 @@
 <template>
-  <nav>
-    <router-link to="select">adsad</router-link>
+  <nav class="nav">
+    <router-link to="/">List</router-link>
+    <router-link to="/edit">Edit</router-link>
   </nav>
   <RouterView />
 </template>
@@ -22,4 +23,10 @@ onMounted(() => {
   fetchData();
 });
 </script>
-<style scoped></style>
+<style scoped>
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+</style>
