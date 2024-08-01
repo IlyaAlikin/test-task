@@ -1,28 +1,39 @@
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  {{ props.link }}
+  <div class="" v-if="!state.isLoading">
+    <div>{{ state.data }}</div>
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, reactive } from "vue";
 import axios from "axios";
 
-const fetchData = async () => {
+const props = defineProps({
+  link: String,
+});
+
+console.log(props.link);
+
+const state = reactive({
+  data: {},
+  isLoading: true,
+});
+
+const getShips = async () => {
   try {
-    const response = await axios.get("https://swapi.dev/api/starships/");
-    console.log(response.data); // Access fetched data here
+    const url = props.link;
+    console.log("url", url);
+    const response = await axios.get(url); // No need for template literals here
+    console.log(response); // Access fetched data here
+    state.data = response.data;
+    state.isLoading = !state.isLoading;
   } catch (error) {
     console.error("Error fetching data:", error);
   }
 };
 
 onMounted(() => {
-  fetchData();
+  getShips();
 });
 </script>
 <style scoped></style>

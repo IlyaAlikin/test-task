@@ -1,9 +1,13 @@
 <template>
   <div class="wrapper">
-    <nav class="nav">
-      <router-link to="/">Список персонажей</router-link>
-      <router-link to="/edit">Добавить персонажа</router-link>
-    </nav>
+    <header class="header">
+      <div class="container">
+        <nav class="nav">
+          <router-link to="/">Список персонажей</router-link>
+          <router-link to="/edit">Добавить персонажа</router-link>
+        </nav>
+      </div>
+    </header>
     <main class="main" id="main">
       <div class="main__container">
         <RouterView />
@@ -19,7 +23,7 @@ import axios from "axios";
 const fetchData = async () => {
   try {
     const response = await axios.get("https://swapi.dev/api/");
-    console.log(response.data);
+    // console.log(response.data);
   } catch (error) {
     console.error("Error fetching data:", error);
   }
@@ -29,10 +33,4 @@ onMounted(() => {
   fetchData();
 });
 </script>
-<style scoped>
-.nav {
-  display: flex;
-  align-items: center;
-  gap: 40px;
-}
-</style>
+<style scoped></style>

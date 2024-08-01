@@ -1,7 +1,7 @@
 <template>
   <div class="">Список персонажей</div>
-  <div v-for="item in state.data">
-    <div class="card">
+  <div class="list" v-if="state.data">
+    <div v-for="item in state.data" class="card">
       <div class="card__name">
         {{ item.name }}
       </div>
@@ -9,7 +9,10 @@
         {{ item.birth_year }}
       </div>
       <div class="starship">
-        {{ item.starships }}
+        <div v-if="item.starships.length >= 1">
+          <OwnSelect :link="item.starships[0]" />
+        </div>
+        <!-- {{ item.starships[0] }} -->
       </div>
     </div>
   </div>
@@ -17,6 +20,8 @@
 <script setup lang="ts">
 import { onMounted, reactive } from "vue";
 import axios from "axios";
+
+import OwnSelect from "../components/OwnSelect.vue";
 
 const state = reactive({
   data: {},
@@ -36,4 +41,16 @@ onMounted(() => {
   fetchData();
 });
 </script>
-<style scoped></style>
+<style scoped>
+.list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.card {
+  background: #000;
+  border-radius: 20px;
+  padding: 20px;
+}
+</style>

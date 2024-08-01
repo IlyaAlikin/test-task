@@ -77,3 +77,22 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.nav {
+  height: 90px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
