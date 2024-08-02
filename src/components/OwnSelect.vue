@@ -1,38 +1,39 @@
 <template>
-  <div v-if="!state.isLoading">
-    <div>{{ state.data.name }}</div>
+  <div v-if="starships">
+    <select>
+      <option value="">Select a Starship</option>
+      <option v-for="starship in starships" :key="starship.name">
+        {{ starship.name }}
+      </option>
+    </select>
   </div>
 </template>
+
 <script setup lang="ts">
-import { onMounted, reactive } from "vue";
+import { onMounted, ref, reactive } from "vue";
 import axios from "axios";
-
-const props = defineProps({
-  link: String,
-});
-
-console.log(props.link);
 
 const state = reactive({
   data: {},
   isLoading: true,
 });
 
-const getShips = async () => {
+const starships = ref([]);
+const starshipData = ref<{ [key: string]: any }>({}); // Store starship data by URL
+const selectedStarship = ref("");
+
+const fetchStarships = async () => {
   try {
-    const url = props.link;
-    console.log("url", url);
-    const response = await axios.get(url); // No need for template literals here
-    console.log(response); // Access fetched data here
-    state.data = response.data;
-    state.isLoading = !state.isLoading;
+    const response = await axios.get("https://swapi.dev/api/starships/");
+    console.log("starships", response);
+    starships.value = response.data.results;
+    console.log(starships.value);
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error("Error fetching starships:", error);
   }
 };
 
 onMounted(() => {
-  getShips();
+  fetchStarships();
 });
 </script>
-<style scoped></style>
