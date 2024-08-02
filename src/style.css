@@ -96,3 +96,15 @@ button:focus-visible {
   align-items: center;
   gap: 40px;
 }
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.card {
+  background: #000;
+  border-radius: 20px;
+  padding: 20px;
+}
