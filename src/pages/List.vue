@@ -1,51 +1,6 @@
-<!-- <template>
-  <div class="">Список персонажей</div>
-  <div v-if="characters.length > 0">
-    <div class="list">
-      <div v-for="item in characters" class="card">
-        <div class="card__name">
-          {{ item.name }}
-        </div>
-        <div class="card__birth_year">
-          {{ item.birth_year }}
-        </div>
-        <div class="starship">
-          <div v-if="item.starships.length >= 1">
-            <OwnSelect :link="item.starships[0]" />
-          </div>
-        </div>
-      </div>
-      <div class="add_button">+</div>
-    </div>
-  </div>
-</template>
-<script setup lang="ts">
-import { onMounted } from "vue";
-import { ref } from "vue";
-import { useCharactersStore } from "../stores/characters";
-import axios from "axios";
-
-import OwnSelect from "../components/OwnSelect.vue";
-
-const characters = ref([]);
-const charactersStore = useCharactersStore();
-const fetchData = async () => {
-  try {
-    const response = await axios.get("https://swapi.dev/api/people/");
-    characters.value = response.data.results;
-    charactersStore.setCharacters(response.data.results);
-    console.log(characters.value);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-};
-
-onMounted(() => {
-  fetchData();
-});
-</script> -->
 <template>
   <div class="">Список персонажей</div>
+  {{ characters.length }}
   <div v-if="characters.length > 0">
     <div class="list">
       <div v-for="item in characters" class="card" :key="item.url">
@@ -102,21 +57,29 @@ import { useCharactersStore } from "../stores/characters";
 import axios from "axios";
 
 import OwnSelect from "../components/OwnSelect.vue";
-
-const characters = ref([]);
+import SimplifiedCharacter from "../character"; // Assuming you have a types.ts file
+const characters = ref<SimplifiedCharacter[]>([]); // Use ref for reactivity
 const charactersStore = useCharactersStore();
 const showNewCharacterForm = ref(false);
-const newCharacter = ref({
+const newCharacter = ref<SimplifiedCharacter>({
   name: "",
   birth_year: "",
-  starships: "",
+  starships: [],
 });
 
 const fetchData = async () => {
   try {
     const response = await axios.get("https://swapi.dev/api/people/");
-    characters.value = response.data.results;
-    charactersStore.setCharacters(response.data.results);
+    const simplifiedCharacters = response.data.results.map(
+      (char: any) =>
+        ({
+          name: char.name,
+          birth_year: char.birth_year,
+          starships: char.starships,
+        } as SimplifiedCharacter)
+    );
+    characters.value = simplifiedCharacters; // Update ref with simplified data
+    charactersStore.setCharacters(simplifiedCharacters); // Update Pinia store
     console.log(characters.value);
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -124,16 +87,22 @@ const fetchData = async () => {
 };
 
 const createCharacter = () => {
-  charactersStore.addCharacter(newCharacter.value);
+  charactersStore.addCharacter(newCharacter.value); // Add to Pinia store
   newCharacter.value = {
     name: "",
     birth_year: "",
-    starships: "",
+    starships: [], // Reset starships
   };
   showNewCharacterForm.value = false;
 };
 
 onMounted(() => {
-  fetchData();
+  const storedCharacters = localStorage.getItem("characters");
+  if (storedCharacters) {
+    characters.value = JSON.parse(storedCharacters) as SimplifiedCharacter[];
+    charactersStore.setCharacters(characters.value);
+  } else {
+    fetchData(); // Fetch initial data if not found in local storage
+  }
 });
 </script>
