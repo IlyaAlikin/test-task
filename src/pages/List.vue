@@ -6,28 +6,17 @@
       <div v-for="item in characters" class="card" :key="item.url">
         <div class="card__name card-field">
           <p>Имя:</p>
-          <p>
-            {{ item.name }}
-          </p>
+          <p>{{ item.name }}</p>
         </div>
         <div class="card__birth_year card-field">
           <p>Год рождения:</p>
-          <p>
-            {{ item.birth_year }}
-          </p>
+          <p>{{ item.birth_year }}</p>
         </div>
         <div class="starship" v-if="item.starships.length >= 1">
           <div v-if="item.starships[0] && item.starships[0] !== ''">
-            <div
-              v-if="
-                shipData[item.starships[0]] && shipData[item.starships[0]].name
-              "
-            >
-              <div>
-                Название корабля: {{ shipData[item.starships[0]].name }}
-              </div>
+            <div>
+              Название корабля: {{ item.starships[0].name }}
             </div>
-            <div v-else>загружаем Корабли...</div>
           </div>
         </div>
       </div>
@@ -69,18 +58,17 @@ import { onMounted, ref } from "vue";
 import { useCharactersStore } from "../stores/characters";
 import axios from "axios";
 import OwnSelect from "../components/OwnSelect.vue";
-import SimplifiedCharacter from "../character";
+import { SimplifiedCharacter } from "../interfaces/character";
 
-const characters = ref<SimplifiedCharacter[]>([]);
 const charactersStore = useCharactersStore();
+const characters = ref<SimplifiedCharacter[]>([]);
 const showNewCharacterForm = ref(false);
 const newCharacter = ref<SimplifiedCharacter>({
   name: "",
   birth_year: "",
   starships: [],
 });
-const shipData = ref<{ [key: string]: any }>({});
-const selectedStarship = ref("");
+const selectedStarship = ref(null);
 
 const fetchCharacters = async () => {
   try {
@@ -93,8 +81,8 @@ const fetchCharacters = async () => {
           starships: char.starships,
         } as SimplifiedCharacter)
     );
-    characters.value = simplifiedCharacters;
     charactersStore.setCharacters(simplifiedCharacters);
+    characters.value = charactersStore.characters;
     await fetchAllStarships(simplifiedCharacters);
   } catch (error) {
     console.error("Error fetching characters:", error);
@@ -118,11 +106,8 @@ const fetchAllStarships = async (characters: SimplifiedCharacter[]) => {
   }
 };
 
-const updateSelectedStarship = (starshipUrl: string) => {
-  selectedStarship.value = starshipUrl;
-  if (starshipUrl && !shipData.value[starshipUrl]) {
-    fetchStarship(starshipUrl);
-  }
+const updateSelectedStarship = (starship: any) => {
+  selectedStarship.value = starship;
 };
 
 const createCharacter = () => {
@@ -136,18 +121,11 @@ const createCharacter = () => {
     starships: [],
   };
   showNewCharacterForm.value = false;
-  saveToLocalStorage();
-};
-
-const saveToLocalStorage = () => {
-  localStorage.setItem("characters", JSON.stringify(characters.value));
 };
 
 onMounted(() => {
-  const storedCharacters = localStorage.getItem("characters");
-  if (storedCharacters) {
-    characters.value = JSON.parse(storedCharacters) as SimplifiedCharacter[];
-    charactersStore.setCharacters(characters.value);
+  if (charactersStore.characters.length > 0) {
+    characters.value = charactersStore.characters;
     fetchAllStarships(characters.value);
   } else {
     fetchCharacters();
