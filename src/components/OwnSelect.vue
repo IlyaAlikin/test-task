@@ -16,10 +16,6 @@ import axios from "axios";
 const starships = ref([]);
 const selectedStarship = ref("");
 
-const state = reactive({
-  isLoading: true,
-});
-
 const fetchStarships = async () => {
   try {
     const response = await axios.get("https://swapi.dev/api/starships/");

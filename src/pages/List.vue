@@ -23,21 +23,23 @@
                 shipData[item.starships[0]] && shipData[item.starships[0]].name
               "
             >
-              <div>Ship Name: {{ shipData[item.starships[0]].name }}</div>
+              <div>
+                Название корабля: {{ shipData[item.starships[0]].name }}
+              </div>
             </div>
-            <div v-else>Loading Starship...</div>
+            <div v-else>загружаем Корабли...</div>
           </div>
         </div>
       </div>
       <div v-if="showNewCharacterForm" class="new-character">
-        <h2 class="new-character__title">Add New Character</h2>
+        <h2 class="new-character__title">Добавить нового персонажа</h2>
         <form @submit.prevent="createCharacter" class="new-character__wrapper">
           <div>
-            <label for="name">Name:</label>
+            <label for="name">Имя:</label>
             <input type="text" id="name" v-model="newCharacter.name" required />
           </div>
           <div>
-            <label for="birth_year">Birth Year:</label>
+            <label for="birth_year">Год рождения:</label>
             <input
               type="text"
               id="birth_year"
@@ -45,14 +47,14 @@
               required
             />
           </div>
-          <div>
-            <label for="starships">Starships:</label>
+          <div class="new-character__starship">
+            <label for="starships">Корабль:</label>
             <OwnSelect @update:selectedStarship="updateSelectedStarship" />
           </div>
           <div class="new-characters__buttons">
-            <button type="submit">Create Character</button>
+            <button type="submit">Создать</button>
             <button type="button" @click="showNewCharacterForm = false">
-              Cancel
+              Отменить
             </button>
           </div>
         </form>

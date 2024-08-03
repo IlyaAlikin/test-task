@@ -141,3 +141,11 @@ button:focus-visible {
   align-items: start;
   gap: 10px;
 }
+
+.new-character__starship {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  gap: 10px;
+}
