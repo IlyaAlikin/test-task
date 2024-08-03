@@ -3,7 +3,7 @@
   {{ characters.length }}
   <div v-if="characters.length > 0">
     <div class="list">
-      <div v-for="item in characters" class="card" :key="item.url">
+      <div v-for="item in characters" class="card" :key="item.id">
         <div class="card__name card-field">
           <p>Имя:</p>
           <p>{{ item.name }}</p>
@@ -62,6 +62,7 @@ const charactersStore = useCharactersStore();
 const characters = ref<SimplifiedCharacter[]>([]);
 const showNewCharacterForm = ref(false);
 const newCharacter = ref<SimplifiedCharacter>({
+  id: Date.now(), // Using current timestamp as an initial id
   name: "",
   birth_year: "",
   starships: [],
@@ -73,8 +74,9 @@ const fetchCharacters = async () => {
   try {
     const response = await axios.get("https://swapi.dev/api/people/");
     const simplifiedCharacters = response.data.results.map(
-      (char: any) =>
+      (char: any, index: number) =>
         ({
+          id: index, // Assigning index as id for simplicity
           name: char.name,
           birth_year: char.birth_year,
           starships: char.starships,
@@ -114,8 +116,10 @@ const createCharacter = async () => {
     newCharacter.value.starships.push(selectedStarship.value.url);
     await fetchStarship(selectedStarship.value.url); // Fetch starship data for new character
   }
+  newCharacter.value.id = Date.now(); // Assigning a unique id based on the current timestamp
   charactersStore.addCharacter(newCharacter.value);
   newCharacter.value = {
+    id: Date.now(), // Resetting id for next character
     name: "",
     birth_year: "",
     starships: [],

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div>
     <h1>Редактирование персонажей</h1>
     <div v-if="characters.length > 0">
@@ -136,4 +136,63 @@ onMounted(() => {
     fetchCharacters();
   }
 });
+</script> -->
+<template>
+  <div>
+    <h2>Редактировать персонажей</h2>
+    <div v-if="characters.length > 0">
+      <ul>
+        <li v-for="character in characters" :key="character.id">
+          <span>{{ character.name }} ({{ character.birth_year }})</span>
+          <button @click="removeCharacter(character.id)">Удалить</button>
+        </li>
+      </ul>
+    </div>
+    <div v-else>
+      <p>Нет персонажей для отображения.</p>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import { useCharactersStore } from "../stores/characters";
+
+const charactersStore = useCharactersStore();
+const characters = ref<SimplifiedCharacter[]>([]);
+
+onMounted(() => {
+  characters.value = charactersStore.characters;
+});
+
+const removeCharacter = (id: number) => {
+  charactersStore.removeCharacter(id);
+  characters.value = charactersStore.characters; // Update local state after removal
+};
 </script>
+
+<style scoped>
+/* Добавьте свои стили */
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.5rem 0;
+}
+
+button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: darkred;
+}
+</style>

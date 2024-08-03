@@ -4,26 +4,33 @@ import { SimplifiedCharacter } from "../interfaces/character";
 export const useCharactersStore = defineStore("characters", {
   state: () => ({
     characters: [] as SimplifiedCharacter[],
+    nextId: 1,
   }),
   actions: {
     setCharacters(characters: SimplifiedCharacter[]) {
-      this.characters = characters;
+      this.characters = characters.map((char, index) => ({
+        ...char,
+        id: index + 1,
+      }));
+      this.nextId = characters.length + 1;
     },
     addCharacter(character: SimplifiedCharacter) {
+      character.id = this.nextId;
       this.characters.push(character);
+      this.nextId++;
     },
-    removeCharacter(url: string) {
+    removeCharacter(id: number) {
       this.characters = this.characters.filter(
-        (character) => character.url !== url
+        (character) => character.id !== id
       );
+      this.updateIds();
     },
-    updateCharacter(updatedCharacter: SimplifiedCharacter) {
-      const index = this.characters.findIndex(
-        (character) => character.url === updatedCharacter.url
-      );
-      if (index !== -1) {
-        this.characters[index] = updatedCharacter;
-      }
+    updateIds() {
+      this.characters = this.characters.map((char, index) => ({
+        ...char,
+        id: index + 1,
+      }));
+      this.nextId = this.characters.length + 1;
     },
   },
   persist: {
