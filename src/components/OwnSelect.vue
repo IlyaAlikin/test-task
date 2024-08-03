@@ -1,7 +1,7 @@
 <template>
   <div v-if="starships.length > 0">
-    <select v-model="selectedStarship">
-      <option value="">Select a Starship</option>
+    <select v-model="selectedStarship" @change="updateSelection">
+      <option value="">Выберите истребитель</option>
       <option
         v-for="starship in starships"
         :key="starship.url"
@@ -14,11 +14,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, defineEmits } from "vue";
+import { ref, onMounted, defineEmits, watch } from "vue";
 import axios from "axios";
 
-const starships = ref([]);
-const selectedStarship = ref(null);
+const starships = ref<any[]>([]);
+const selectedStarship = ref<any>(null);
 
 const fetchStarships = async () => {
   try {
@@ -34,7 +34,21 @@ onMounted(() => {
 });
 
 const emit = defineEmits(["update:selectedStarship"]);
+
+const updateSelection = () => {
+  emit("update:selectedStarship", selectedStarship.value);
+};
+
+// Watch the selectedStarship to emit changes
 watch(selectedStarship, (newValue) => {
   emit("update:selectedStarship", newValue);
 });
 </script>
+
+<style scoped>
+select {
+  width: 100%;
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+</style>

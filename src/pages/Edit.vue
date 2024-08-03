@@ -14,6 +14,10 @@
               label="Год рождения"
               v-model="editingCharacter.birth_year"
             />
+            <OwnSelect
+              v-model:selectedStarship="editingCharacter.starships[0]"
+              @update:selectedStarship="updateStarship"
+            />
             <button @click="saveCharacter(character.id)">Сохранить</button>
             <button @click="cancelEditing">Отмена</button>
           </span>
@@ -30,7 +34,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useCharactersStore } from "../stores/characters";
+// import OwnInput from "./OwnInput.vue";
+import OwnSelect from "../components/OwnSelect.vue";
 import OwnInput from "../components/OwnInput.vue";
+// import OwnSelect from "./OwnSelect.vue";
 import { SimplifiedCharacter } from "../interfaces/character";
 
 const charactersStore = useCharactersStore();
@@ -60,6 +67,12 @@ const saveCharacter = (id: number) => {
     charactersStore.updateCharacter(id, editingCharacter.value);
     characters.value = charactersStore.characters;
     cancelEditing();
+  }
+};
+
+const updateStarship = (starship: any) => {
+  if (editingCharacter.value) {
+    editingCharacter.value.starships = [starship.url]; // Update with new starship URL
   }
 };
 
