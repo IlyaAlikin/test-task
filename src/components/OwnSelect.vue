@@ -2,7 +2,11 @@
   <div v-if="starships.length > 0">
     <select v-model="selectedStarship">
       <option value="">Select a Starship</option>
-      <option v-for="starship in starships" :key="starship.name" :value="starship">
+      <option
+        v-for="starship in starships"
+        :key="starship.url"
+        :value="starship"
+      >
         {{ starship.name }}
       </option>
     </select>

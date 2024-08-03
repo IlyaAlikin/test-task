@@ -13,10 +13,8 @@
           <p>{{ item.birth_year }}</p>
         </div>
         <div class="starship" v-if="item.starships.length >= 1">
-          <div v-if="item.starships[0] && item.starships[0] !== ''">
-            <div>
-              Название корабля: {{ item.starships[0].name }}
-            </div>
+          <div v-if="shipData[item.starships[0]]">
+            <div>Название корабля: {{ shipData[item.starships[0]].name }}</div>
           </div>
         </div>
       </div>
@@ -69,6 +67,7 @@ const newCharacter = ref<SimplifiedCharacter>({
   starships: [],
 });
 const selectedStarship = ref(null);
+const shipData = ref<{ [key: string]: any }>({});
 
 const fetchCharacters = async () => {
   try {
@@ -110,9 +109,10 @@ const updateSelectedStarship = (starship: any) => {
   selectedStarship.value = starship;
 };
 
-const createCharacter = () => {
+const createCharacter = async () => {
   if (selectedStarship.value) {
-    newCharacter.value.starships.push(selectedStarship.value);
+    newCharacter.value.starships.push(selectedStarship.value.url);
+    await fetchStarship(selectedStarship.value.url); // Fetch starship data for new character
   }
   charactersStore.addCharacter(newCharacter.value);
   newCharacter.value = {
