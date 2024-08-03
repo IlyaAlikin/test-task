@@ -3,8 +3,12 @@
     <header class="header">
       <div class="container">
         <nav class="nav">
-          <router-link to="/">Список персонажей</router-link>
-          <router-link to="/edit">Изменить персонажа</router-link>
+          <p>
+            <router-link to="/">Список персонажей</router-link>
+          </p>
+          <p>
+            <router-link to="/edit">Изменить персонажа</router-link>
+          </p>
         </nav>
       </div>
     </header>

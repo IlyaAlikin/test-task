@@ -4,14 +4,20 @@
   <div v-if="characters.length > 0">
     <div class="list">
       <div v-for="item in characters" class="card" :key="item.url">
-        <div class="card__name">
-          {{ item.name }}
+        <div class="card__name card-field">
+          <p>Имя:</p>
+          <p>
+            {{ item.name }}
+          </p>
         </div>
-        <div class="card__birth_year">
-          {{ item.birth_year }}
+        <div class="card__birth_year card-field">
+          <p>Год рождения:</p>
+          <p>
+            {{ item.birth_year }}
+          </p>
         </div>
         <div class="starship" v-if="item.starships.length >= 1">
-          <template v-if="item.starships[0] && item.starships[0] !== ''">
+          <div v-if="item.starships[0] && item.starships[0] !== ''">
             <div
               v-if="
                 shipData[item.starships[0]] && shipData[item.starships[0]].name
@@ -19,13 +25,13 @@
             >
               <div>Ship Name: {{ shipData[item.starships[0]].name }}</div>
             </div>
-            <template v-else> Loading Starship... </template>
-          </template>
+            <div v-else>Loading Starship...</div>
+          </div>
         </div>
       </div>
       <div v-if="showNewCharacterForm" class="new-character">
-        <h2>Add New Character</h2>
-        <form @submit.prevent="createCharacter">
+        <h2 class="new-character__title">Add New Character</h2>
+        <form @submit.prevent="createCharacter" class="new-character__wrapper">
           <div>
             <label for="name">Name:</label>
             <input type="text" id="name" v-model="newCharacter.name" required />
@@ -43,10 +49,12 @@
             <label for="starships">Starships:</label>
             <OwnSelect @update:selectedStarship="updateSelectedStarship" />
           </div>
-          <button type="submit">Create Character</button>
-          <button type="button" @click="showNewCharacterForm = false">
-            Cancel
-          </button>
+          <div class="new-characters__buttons">
+            <button type="submit">Create Character</button>
+            <button type="button" @click="showNewCharacterForm = false">
+              Cancel
+            </button>
+          </div>
         </form>
       </div>
       <div class="add_button" @click="showNewCharacterForm = true">+</div>

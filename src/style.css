@@ -97,14 +97,47 @@ button:focus-visible {
   gap: 40px;
 }
 
+.nav p {
+}
+
 .list {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 }
 
-.card {
-  background: #000;
+.card,
+.add_button {
+  background: #9c5f19;
   border-radius: 20px;
   padding: 20px;
+  font-size: 18px;
+  text-align-last: left;
+}
+
+.add_button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  cursor: pointer;
+}
+
+.card-field {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.new-character {
+}
+.new-character__title {
+  text-align: left;
+  margin: 0;
+}
+.new-character__wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 10px;
 }
