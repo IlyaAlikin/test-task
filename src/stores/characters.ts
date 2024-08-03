@@ -25,6 +25,14 @@ export const useCharactersStore = defineStore("characters", {
       );
       this.updateIds();
     },
+    updateCharacter(id: number, updatedCharacter: SimplifiedCharacter) {
+      const index = this.characters.findIndex(
+        (character) => character.id === id
+      );
+      if (index !== -1) {
+        this.characters[index] = { ...updatedCharacter, id }; // Ensure id is preserved
+      }
+    },
     updateIds() {
       this.characters = this.characters.map((char, index) => ({
         ...char,
