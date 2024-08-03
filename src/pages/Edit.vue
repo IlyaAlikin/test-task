@@ -1,32 +1,55 @@
 <template>
   <div>
-    <h2>Редактировать персонажей</h2>
-    <div v-if="characters.length > 0">
-      <ul>
-        <li v-for="character in characters" :key="character.id">
-          <span v-if="!isEditing(character.id)">
-            {{ character.name }} ({{ character.birth_year }})
-            <button @click="startEditing(character.id)">Редактировать</button>
-          </span>
-          <span v-else>
-            <OwnInput label="Имя" v-model="editingCharacter.name" />
-            <OwnInput
-              label="Год рождения"
-              v-model="editingCharacter.birth_year"
-            />
-            <OwnSelect
-              v-model:selectedStarship="editingCharacter.starships[0]"
-              @update:selectedStarship="updateStarship"
-            />
-            <button @click="saveCharacter(character.id)">Сохранить</button>
-            <button @click="cancelEditing">Отмена</button>
-          </span>
-          <button @click="removeCharacter(character.id)">Удалить</button>
-        </li>
-      </ul>
-    </div>
-    <div v-else>
-      <p>Нет персонажей для отображения.</p>
+    <h2 class="list-name">Редактировать персонажей</h2>
+    <div class="edit">
+      <div v-if="characters.length > 0" class="edit-list">
+        <ul>
+          <li v-for="character in characters" :key="character.id">
+            <div v-if="isEditing(character.id)">
+              <OwnInput
+                class="edit-input"
+                label="Имя"
+                v-model="editingCharacter.name"
+              />
+              <OwnInput
+                class="edit-input"
+                label="Год рождения"
+                v-model="editingCharacter.birth_year"
+              />
+              <OwnSelect
+                v-model:selectedStarship="editingCharacter.starships[0]"
+                @update:selectedStarship="updateStarship"
+              />
+              <div class="button__wrapper">
+                <button @click="saveCharacter(character.id)">Сохранить</button>
+                <button @click="cancelEditing">Отмена</button>
+              </div>
+            </div>
+            <div v-else class="character">
+              <div class="character-info">
+                <div class="character-name">
+                  {{ character.name }}
+                </div>
+                <div class="character-birth-year">
+                  ({{ character.birth_year }})
+                </div>
+              </div>
+              <button class="edit-button" @click="startEditing(character.id)">
+                Редактировать
+              </button>
+            </div>
+            <button
+              class="delete-button"
+              @click="removeCharacter(character.id)"
+            >
+              Удалить
+            </button>
+          </li>
+        </ul>
+      </div>
+      <div v-else>
+        <p>Нет персонажей для отображения.</p>
+      </div>
     </div>
   </div>
 </template>
@@ -91,6 +114,7 @@ const removeCharacter = (id: number) => {
 ul {
   list-style-type: none;
   padding: 0;
+  width: inherit;
 }
 
 li {
@@ -99,7 +123,7 @@ li {
   margin: 0.5rem 0;
 }
 
-button {
+.delete-button {
   background-color: red;
   color: white;
   border: none;
@@ -107,7 +131,28 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+.delete-button:hover {
   background-color: darkred;
+}
+
+.edit-input {
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.button__wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+.character {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  gap: 10px;
 }
 </style>

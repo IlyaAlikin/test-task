@@ -1,7 +1,13 @@
 <template>
   <div>
     <label :for="label">{{ label }}</label>
-    <input :id="label" v-model="localValue" @input="updateValue" :type="type" />
+    <input
+      class="edit-input"
+      :id="label"
+      v-model="localValue"
+      @input="updateValue"
+      :type="type"
+    />
   </div>
 </template>
 

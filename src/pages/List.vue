@@ -1,6 +1,5 @@
 <template>
-  <div class="">Список персонажей</div>
-  {{ characters.length }}
+  <h2 class="list-name">Число персонажей: {{ characters.length }}</h2>
   <div v-if="characters.length > 0">
     <div class="list">
       <div v-for="item in characters" class="card" :key="item.id">
@@ -21,12 +20,12 @@
       <div v-if="showNewCharacterForm" class="new-character">
         <h2 class="new-character__title">Добавить нового персонажа</h2>
         <form @submit.prevent="createCharacter" class="new-character__wrapper">
-          <div>
-            <label for="name">Имя:</label>
+          <div class="new-field">
+            <label class="label" for="name">Имя:</label>
             <input type="text" id="name" v-model="newCharacter.name" required />
           </div>
-          <div>
-            <label for="birth_year">Год рождения:</label>
+          <div class="new-field">
+            <label class="label" for="birth_year">Год рождения:</label>
             <input
               type="text"
               id="birth_year"
@@ -136,3 +135,23 @@ onMounted(() => {
   }
 });
 </script>
+<style scoped>
+.label {
+  text-align: left;
+}
+</style>
+<style scoped>
+.new-characters__buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+.new-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.new-field input {
+  width: 100%;
+}
+</style>

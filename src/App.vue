@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <header class="header">
-      <div class="container">
+      <div class="main__container">
         <nav class="nav">
           <p>
             <router-link to="/">Список персонажей</router-link>
