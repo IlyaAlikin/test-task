@@ -10,9 +10,10 @@ const router = createRouter({
       component: List,
     },
     {
-      path: "/edit",
+      path: "/edit/:id",
       name: "Edit",
       component: Edit,
+      props: true,
     },
   ],
 });

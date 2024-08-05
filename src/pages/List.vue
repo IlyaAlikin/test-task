@@ -16,6 +16,12 @@
             <div>Название корабля: {{ shipData[item.starships[0]].name }}</div>
           </div>
         </div>
+        <div class="card__actions">
+          <button @click="editCharacter(item.id)">Изменить</button>
+          <button class="delete-button" @click="removeCharacter(item.id)">
+            Удалить
+          </button>
+        </div>
       </div>
       <div v-if="showNewCharacterForm" class="new-character">
         <h2 class="new-character__title">Добавить нового персонажа</h2>
@@ -45,13 +51,16 @@
           </div>
         </form>
       </div>
-      <div class="add_button" @click="showNewCharacterForm = true">+</div>
+      <div class="add_button" @click="showNewCharacterForm = true">
+        Добавить
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { useCharactersStore } from "../stores/characters";
 import axios from "axios";
 import OwnSelect from "../components/OwnSelect.vue";
@@ -61,7 +70,7 @@ const charactersStore = useCharactersStore();
 const characters = ref<SimplifiedCharacter[]>([]);
 const showNewCharacterForm = ref(false);
 const newCharacter = ref<SimplifiedCharacter>({
-  id: Date.now(), // Using current timestamp as an initial id
+  id: Date.now(),
   name: "",
   birth_year: "",
   starships: [],
@@ -69,13 +78,15 @@ const newCharacter = ref<SimplifiedCharacter>({
 const selectedStarship = ref(null);
 const shipData = ref<{ [key: string]: any }>({});
 
+const router = useRouter();
+
 const fetchCharacters = async () => {
   try {
     const response = await axios.get("https://swapi.dev/api/people/");
     const simplifiedCharacters = response.data.results.map(
       (char: any, index: number) =>
         ({
-          id: index, // Assigning index as id for simplicity
+          id: index,
           name: char.name,
           birth_year: char.birth_year,
           starships: char.starships,
@@ -113,17 +124,26 @@ const updateSelectedStarship = (starship: any) => {
 const createCharacter = async () => {
   if (selectedStarship.value) {
     newCharacter.value.starships.push(selectedStarship.value.url);
-    await fetchStarship(selectedStarship.value.url); // Fetch starship data for new character
+    await fetchStarship(selectedStarship.value.url);
   }
-  newCharacter.value.id = Date.now(); // Assigning a unique id based on the current timestamp
+  newCharacter.value.id = Date.now();
   charactersStore.addCharacter(newCharacter.value);
   newCharacter.value = {
-    id: Date.now(), // Resetting id for next character
+    id: Date.now(),
     name: "",
     birth_year: "",
     starships: [],
   };
   showNewCharacterForm.value = false;
+};
+
+const editCharacter = (id: number) => {
+  router.push({ name: "Edit", params: { id } });
+};
+
+const removeCharacter = (id: number) => {
+  charactersStore.removeCharacter(id);
+  characters.value = charactersStore.characters;
 };
 
 onMounted(() => {
@@ -135,12 +155,11 @@ onMounted(() => {
   }
 });
 </script>
+
 <style scoped>
 .label {
   text-align: left;
 }
-</style>
-<style scoped>
 .new-characters__buttons {
   display: flex;
   justify-content: space-between;
@@ -150,8 +169,12 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
 }
-
 .new-field input {
   width: 100%;
+}
+.card__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
 }
 </style>

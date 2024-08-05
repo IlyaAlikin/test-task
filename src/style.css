@@ -76,38 +76,10 @@ button:focus-visible {
   }
 }
 
-.header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: #213547;
-}
-
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
 .main__container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0px 15px;
-}
-
-.nav {
-  display: flex;
-  align-items: center;
-  height: 90px;
-  gap: 40px;
-}
-
-.nav p a {
-  color: #fff;
-}
-
-.nav p {
-  margin: 0;
 }
 
 .list-name {
@@ -187,6 +159,17 @@ button:focus-visible {
 
 button {
   transition: all 0.3s ease;
+}
+
+.delete-button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+.delete-button:hover {
+  background-color: darkred;
 }
 
 @media (max-width: 1160px) {

@@ -1,17 +1,5 @@
 <template>
   <div class="wrapper">
-    <header class="header">
-      <div class="main__container">
-        <nav class="nav">
-          <p>
-            <router-link to="/">Список персонажей</router-link>
-          </p>
-          <p>
-            <router-link to="/edit">Изменить персонажа</router-link>
-          </p>
-        </nav>
-      </div>
-    </header>
     <main class="main" id="main">
       <div class="main__container">
         <RouterView />
