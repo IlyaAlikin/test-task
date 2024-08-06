@@ -36,8 +36,6 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useCharactersStore } from "../stores/characters";
-import axios from "axios";
-import OwnSelect from "../components/OwnSelect.vue";
 import { SimplifiedCharacter } from "../interfaces/character";
 
 const charactersStore = useCharactersStore();
@@ -46,39 +44,24 @@ const shipData = ref<{ [key: string]: any }>({});
 
 const router = useRouter();
 
-const fetchCharacters = async () => {
-  try {
-    const response = await axios.get("https://swapi.dev/api/people/");
-    const simplifiedCharacters = response.data.results.map(
-      (char: any, index: number) =>
-        ({
-          id: index,
-          name: char.name,
-          birth_year: char.birth_year,
-          starships: char.starships,
-        } as SimplifiedCharacter)
-    );
-    charactersStore.setCharacters(simplifiedCharacters);
-    characters.value = charactersStore.characters;
-    await fetchAllStarships(simplifiedCharacters);
-  } catch (error) {
-    console.error("Error fetching characters:", error);
-  }
-};
-
-const fetchStarship = async (url: string) => {
-  try {
-    const response = await axios.get(url);
-    shipData.value[url] = response.data;
-  } catch (error) {
-    console.error("Error fetching ship data:", error);
-  }
+const loadCharactersFromStore = () => {
+  characters.value = charactersStore.characters;
+  fetchAllStarships(characters.value);
 };
 
 const fetchAllStarships = async (characters: SimplifiedCharacter[]) => {
   for (const character of characters) {
     if (character.starships.length >= 1 && character.starships[0] !== "") {
-      await fetchStarship(character.starships[0]);
+      const starshipUrl = character.starships[0];
+      // Ensure that the starship is not already in shipData
+      if (!shipData.value[starshipUrl]) {
+        const starship = charactersStore.starships.find(
+          (st) => st.url === starshipUrl
+        );
+        if (starship) {
+          shipData.value[starshipUrl] = starship;
+        }
+      }
     }
   }
 };
@@ -93,41 +76,14 @@ const createCharacter = () => {
 
 const removeCharacter = (id: number) => {
   charactersStore.removeCharacter(id);
-  characters.value = charactersStore.characters;
+  loadCharactersFromStore();
 };
 
 onMounted(() => {
   if (charactersStore.characters.length > 0) {
-    characters.value = charactersStore.characters;
-    fetchAllStarships(characters.value);
+    loadCharactersFromStore();
   } else {
-    fetchCharacters();
+    loadCharactersFromStore();
   }
 });
 </script>
-
-<style scoped>
-.label {
-  text-align: left;
-}
-.new-characters__buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-}
-.new-field {
-  display: flex;
-  flex-direction: column;
-}
-.new-field input {
-  width: 100%;
-}
-.card__actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-.add_button {
-  margin-top: 10px;
-}
-</style>

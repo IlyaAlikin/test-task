@@ -4,6 +4,7 @@ import { SimplifiedCharacter } from "../interfaces/character";
 export const useCharactersStore = defineStore("characters", {
   state: () => ({
     characters: [] as SimplifiedCharacter[],
+    starships: [] as any[], // Добавляем состояние для истребителей
     nextId: 1,
   }),
   actions: {
@@ -39,6 +40,12 @@ export const useCharactersStore = defineStore("characters", {
         id: index + 1,
       }));
       this.nextId = this.characters.length + 1;
+    },
+    setStarships(starships: any[]) {
+      this.starships = starships;
+    },
+    addStarship(starship: any) {
+      this.starships.push(starship);
     },
   },
   persist: {

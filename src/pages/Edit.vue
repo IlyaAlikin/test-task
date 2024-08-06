@@ -75,6 +75,10 @@ const saveCharacter = () => {
       id: Date.now(),
     });
   }
+  localStorage.setItem(
+    "characters",
+    JSON.stringify(charactersStore.characters)
+  );
   router.push({ name: "List" });
 };
 
