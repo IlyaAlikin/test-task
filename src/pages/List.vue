@@ -23,38 +23,12 @@
           </button>
         </div>
       </div>
-      <div v-if="showNewCharacterForm" class="new-character">
-        <h2 class="new-character__title">Добавить нового персонажа</h2>
-        <form @submit.prevent="createCharacter" class="new-character__wrapper">
-          <div class="new-field">
-            <label class="label" for="name">Имя:</label>
-            <input type="text" id="name" v-model="newCharacter.name" required />
-          </div>
-          <div class="new-field">
-            <label class="label" for="birth_year">Год рождения:</label>
-            <input
-              type="text"
-              id="birth_year"
-              v-model="newCharacter.birth_year"
-              required
-            />
-          </div>
-          <div class="new-character__starship">
-            <label for="starships">Корабль:</label>
-            <OwnSelect @update:selectedStarship="updateSelectedStarship" />
-          </div>
-          <div class="new-characters__buttons">
-            <button type="submit">Создать</button>
-            <button type="button" @click="showNewCharacterForm = false">
-              Отменить
-            </button>
-          </div>
-        </form>
-      </div>
-      <div class="add_button" @click="showNewCharacterForm = true">
-        Добавить
-      </div>
     </div>
+  </div>
+  <div>
+    <button class="add_button" @click="createCharacter">
+      Добавить нового персонажа
+    </button>
   </div>
 </template>
 
@@ -68,14 +42,6 @@ import { SimplifiedCharacter } from "../interfaces/character";
 
 const charactersStore = useCharactersStore();
 const characters = ref<SimplifiedCharacter[]>([]);
-const showNewCharacterForm = ref(false);
-const newCharacter = ref<SimplifiedCharacter>({
-  id: Date.now(),
-  name: "",
-  birth_year: "",
-  starships: [],
-});
-const selectedStarship = ref(null);
 const shipData = ref<{ [key: string]: any }>({});
 
 const router = useRouter();
@@ -117,28 +83,12 @@ const fetchAllStarships = async (characters: SimplifiedCharacter[]) => {
   }
 };
 
-const updateSelectedStarship = (starship: any) => {
-  selectedStarship.value = starship;
-};
-
-const createCharacter = async () => {
-  if (selectedStarship.value) {
-    newCharacter.value.starships.push(selectedStarship.value.url);
-    await fetchStarship(selectedStarship.value.url);
-  }
-  newCharacter.value.id = Date.now();
-  charactersStore.addCharacter(newCharacter.value);
-  newCharacter.value = {
-    id: Date.now(),
-    name: "",
-    birth_year: "",
-    starships: [],
-  };
-  showNewCharacterForm.value = false;
-};
-
 const editCharacter = (id: number) => {
   router.push({ name: "Edit", params: { id } });
+};
+
+const createCharacter = () => {
+  router.push({ name: "Edit" });
 };
 
 const removeCharacter = (id: number) => {
@@ -175,6 +125,9 @@ onMounted(() => {
 .card__actions {
   display: flex;
   gap: 10px;
+  margin-top: 10px;
+}
+.add_button {
   margin-top: 10px;
 }
 </style>

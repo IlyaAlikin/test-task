@@ -1,8 +1,10 @@
 <template>
   <div>
-    <h2 class="list-name">Редактировать персонажа</h2>
+    <h2 class="list-name">
+      {{ isEdit ? "Редактировать персонажа" : "Создать персонажа" }}
+    </h2>
     <div class="edit">
-      <div v-if="editingCharacter">
+      <div>
         <OwnInput
           class="edit-input"
           label="Имя"
@@ -18,12 +20,11 @@
           @update:selectedStarship="updateStarship"
         />
         <div class="button__wrapper">
-          <button @click="saveCharacter">Сохранить</button>
+          <button @click="saveCharacter">
+            {{ isEdit ? "Сохранить" : "Создать" }}
+          </button>
           <button @click="cancelEditing">Отмена</button>
         </div>
-      </div>
-      <div v-else>
-        <p>Персонаж не найден.</p>
       </div>
     </div>
   </div>
@@ -40,24 +41,41 @@ import { SimplifiedCharacter } from "../interfaces/character";
 const route = useRoute();
 const router = useRouter();
 const charactersStore = useCharactersStore();
-const editingCharacter = ref<SimplifiedCharacter | null>(null);
+
+const isEdit = ref(false);
+const editingCharacter = ref<SimplifiedCharacter>({
+  id: Date.now(),
+  name: "",
+  birth_year: "",
+  starships: [],
+});
 
 onMounted(() => {
-  const id = Number(route.params.id);
-  const character = charactersStore.characters.find((c) => c.id === id);
-  if (character) {
-    editingCharacter.value = { ...character };
+  const id = route.params.id;
+  if (id) {
+    const character = charactersStore.characters.find(
+      (c) => c.id === Number(id)
+    );
+    if (character) {
+      editingCharacter.value = { ...character };
+      isEdit.value = true;
+    }
   }
 });
 
 const saveCharacter = () => {
-  if (editingCharacter.value) {
+  if (isEdit.value) {
     charactersStore.updateCharacter(
       editingCharacter.value.id,
       editingCharacter.value
     );
-    router.push({ name: "List" });
+  } else {
+    charactersStore.addCharacter({
+      ...editingCharacter.value,
+      id: Date.now(),
+    });
   }
+  router.push({ name: "List" });
 };
 
 const cancelEditing = () => {
