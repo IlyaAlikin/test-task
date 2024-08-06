@@ -1,21 +1,32 @@
+// stores/characters.ts
 import { defineStore } from "pinia";
-import { SimplifiedCharacter } from "../interfaces/character";
+import axios from "axios";
 
 export const useCharactersStore = defineStore("characters", {
   state: () => ({
-    characters: [] as SimplifiedCharacter[],
-    starships: [] as any[], // Добавляем состояние для истребителей
+    characters: [] as any[], // Список персонажей
+    starships: [] as any[], // Список истребителей
     nextId: 1,
   }),
   actions: {
-    setCharacters(characters: SimplifiedCharacter[]) {
+    async loadStarships() {
+      if (this.starships.length === 0) {
+        try {
+          const response = await axios.get("https://swapi.dev/api/starships/");
+          this.starships = response.data.results;
+        } catch (error) {
+          console.error("Error fetching starships:", error);
+        }
+      }
+    },
+    setCharacters(characters: any[]) {
       this.characters = characters.map((char, index) => ({
         ...char,
         id: index + 1,
       }));
       this.nextId = characters.length + 1;
     },
-    addCharacter(character: SimplifiedCharacter) {
+    addCharacter(character: any) {
       character.id = this.nextId;
       this.characters.push(character);
       this.nextId++;
@@ -26,7 +37,7 @@ export const useCharactersStore = defineStore("characters", {
       );
       this.updateIds();
     },
-    updateCharacter(id: number, updatedCharacter: SimplifiedCharacter) {
+    updateCharacter(id: number, updatedCharacter: any) {
       const index = this.characters.findIndex(
         (character) => character.id === id
       );
@@ -40,12 +51,6 @@ export const useCharactersStore = defineStore("characters", {
         id: index + 1,
       }));
       this.nextId = this.characters.length + 1;
-    },
-    setStarships(starships: any[]) {
-      this.starships = starships;
-    },
-    addStarship(starship: any) {
-      this.starships.push(starship);
     },
   },
   persist: {

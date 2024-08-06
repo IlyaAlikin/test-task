@@ -1,10 +1,10 @@
 <template>
-  <div v-if="starships.length > 0">
-    <select v-model="selectedStarship" @change="updateSelection">
+  <div v-if="allStarships.length > 0">
+    <select v-model="selectedStarshipUrl" @change="updateSelection">
       <option
         v-for="starship in allStarships"
         :key="starship.url"
-        :value="starship"
+        :value="starship.url"
       >
         {{ starship.name }}
       </option>
@@ -14,10 +14,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, defineProps, defineEmits, watch } from "vue";
-import axios from "axios";
-
-const starships = ref<any[]>([]);
-const selectedStarship = ref<any>(null);
+import { useCharactersStore } from "../stores/characters";
 
 const props = defineProps({
   initialStarshipUrl: {
@@ -26,48 +23,40 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(["update:selectedStarship"]);
+const charactersStore = useCharactersStore();
+
 const allStarships = ref<any[]>([]);
+const selectedStarshipUrl = ref<string>("");
 
-const fetchStarships = async () => {
-  try {
-    const response = await axios.get("https://swapi.dev/api/starships/");
-    starships.value = response.data.results;
+const initializeStarships = async () => {
+  // Загрузка истребителей из хранилища
+  await charactersStore.loadStarships();
+  allStarships.value = charactersStore.starships;
 
-    // Combine general starships list with the initial starship (if any)
-    if (props.initialStarshipUrl) {
-      const initialStarshipResponse = await axios.get(props.initialStarshipUrl);
-      const initialStarship = initialStarshipResponse.data;
-
-      if (
-        !starships.value.some(
-          (starship) => starship.url === initialStarship.url
-        )
-      ) {
-        starships.value.push(initialStarship);
-      }
-
-      selectedStarship.value = initialStarship;
-    }
-
-    allStarships.value = starships.value;
-  } catch (error) {
-    console.error("Error fetching starships:", error);
+  // Установка выбранного истребителя
+  if (props.initialStarshipUrl) {
+    selectedStarshipUrl.value = props.initialStarshipUrl;
   }
 };
 
 onMounted(() => {
-  fetchStarships();
+  initializeStarships();
 });
 
-const emit = defineEmits(["update:selectedStarship"]);
-
 const updateSelection = () => {
-  emit("update:selectedStarship", selectedStarship.value);
+  const selectedStarship = allStarships.value.find(
+    (starship: any) => starship.url === selectedStarshipUrl.value
+  );
+  emit("update:selectedStarship", selectedStarship);
 };
 
-// Watch the selectedStarship to emit changes
-watch(selectedStarship, (newValue) => {
-  emit("update:selectedStarship", newValue);
+// Watch the selectedStarshipUrl to emit changes
+watch(selectedStarshipUrl, (newUrl) => {
+  const newStarship = allStarships.value.find(
+    (starship: any) => starship.url === newUrl
+  );
+  emit("update:selectedStarship", newStarship);
 });
 </script>
 
