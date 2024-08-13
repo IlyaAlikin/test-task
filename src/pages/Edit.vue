@@ -1,3 +1,4 @@
+Edit.vue
 <template>
   <div>
     <h2 class="list-name">
@@ -15,10 +16,7 @@
           label="Год рождения"
           v-model="editingCharacter.birth_year"
         />
-        <OwnSelect
-          :initialStarshipUrl="editingCharacter.starships[0]"
-          @update:selectedStarship="updateStarship"
-        />
+        <OwnSelect v-model="selectedStarshipId" :options="starshipOptions" />
         <div class="button__wrapper">
           <button @click="saveCharacter">
             {{ isEdit ? "Сохранить" : "Создать" }}
@@ -50,6 +48,10 @@ const editingCharacter = ref<SimplifiedCharacter>({
   starships: [],
 });
 
+const selectedStarshipId = ref<string>("");
+
+const starshipOptions = ref<{ id: string; name: string }[]>([]);
+
 onMounted(() => {
   const id = route.params.id;
   if (id) {
@@ -59,11 +61,23 @@ onMounted(() => {
     if (character) {
       editingCharacter.value = { ...character };
       isEdit.value = true;
+      selectedStarshipId.value = character.starships[0] || "";
     }
   }
+  loadStarshipOptions();
 });
 
+const loadStarshipOptions = () => {
+  starshipOptions.value = charactersStore.starships.map((starship) => ({
+    id: starship.url,
+    name: starship.name,
+  }));
+};
+
 const saveCharacter = () => {
+  editingCharacter.value.starships = selectedStarshipId.value
+    ? [selectedStarshipId.value]
+    : [];
   if (isEdit.value) {
     charactersStore.updateCharacter(
       editingCharacter.value.id,
@@ -84,12 +98,6 @@ const saveCharacter = () => {
 
 const cancelEditing = () => {
   router.push({ name: "List" });
-};
-
-const updateStarship = (starship: any) => {
-  if (starship && editingCharacter.value) {
-    editingCharacter.value.starships = [starship.url];
-  }
 };
 </script>
 

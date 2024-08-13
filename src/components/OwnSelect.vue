@@ -1,69 +1,85 @@
+OwnSelect.vue
 <template>
-  <div v-if="allStarships.length > 0">
-    <select v-model="selectedStarshipUrl" @change="updateSelection">
-      <option
-        v-for="starship in allStarships"
-        :key="starship.url"
-        :value="starship.url"
+  <div class="select-container">
+    <div class="selected-item" @click="toggleDropdown">
+      {{ selectedItemName }}
+    </div>
+    <div v-if="dropdownOpen" class="dropdown-list">
+      <div
+        v-for="option in options"
+        :key="option.id"
+        @click="selectOption(option.id)"
+        class="dropdown-item"
       >
-        {{ starship.name }}
-      </option>
-    </select>
+        {{ option.name }}
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, defineProps, defineEmits, watch } from "vue";
-import { useCharactersStore } from "../stores/characters";
+import { ref, computed, defineProps, defineEmits } from "vue";
 
 const props = defineProps({
-  initialStarshipUrl: {
+  modelValue: {
     type: String,
-    default: "",
+    required: true,
+  },
+  options: {
+    type: Array as () => { id: string; name: string }[],
+    required: true,
   },
 });
 
-const emit = defineEmits(["update:selectedStarship"]);
-const charactersStore = useCharactersStore();
+const emit = defineEmits(["update:modelValue"]);
 
-const allStarships = ref<any[]>([]);
-const selectedStarshipUrl = ref<string>("");
+const dropdownOpen = ref(false);
 
-const initializeStarships = async () => {
-  // Загрузка истребителей из хранилища
-  await charactersStore.loadStarships();
-  allStarships.value = charactersStore.starships;
-
-  // Установка выбранного истребителя
-  if (props.initialStarshipUrl) {
-    selectedStarshipUrl.value = props.initialStarshipUrl;
-  }
-};
-
-onMounted(() => {
-  initializeStarships();
+const selectedItemName = computed(() => {
+  const selectedOption = props.options.find(
+    (option) => option.id === props.modelValue
+  );
+  return selectedOption ? selectedOption.name : "Select an option";
 });
 
-const updateSelection = () => {
-  const selectedStarship = allStarships.value.find(
-    (starship: any) => starship.url === selectedStarshipUrl.value
-  );
-  emit("update:selectedStarship", selectedStarship);
+const toggleDropdown = () => {
+  dropdownOpen.value = !dropdownOpen.value;
 };
 
-// Watch the selectedStarshipUrl to emit changes
-watch(selectedStarshipUrl, (newUrl) => {
-  const newStarship = allStarships.value.find(
-    (starship: any) => starship.url === newUrl
-  );
-  emit("update:selectedStarship", newStarship);
-});
+const selectOption = (id: string) => {
+  emit("update:modelValue", id);
+  dropdownOpen.value = false;
+};
 </script>
 
 <style scoped>
-select {
+.select-container {
+  position: relative;
   width: 100%;
-  padding: 0.5rem;
-  box-sizing: border-box;
+}
+
+.selected-item {
+  padding: 10px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.dropdown-list {
+  position: absolute;
+  width: 100%;
+  border: 1px solid #ccc;
+  background-color: #ccc;
+  color: black;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
 }
 </style>

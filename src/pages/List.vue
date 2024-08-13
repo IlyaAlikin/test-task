@@ -25,6 +25,10 @@
       </div>
     </div>
   </div>
+  <div v-else>
+    <p>Нет данных для отображения. Попробуйте загрузить данные снова.</p>
+    <button @click="loadCharactersFromStore">Загрузить персонажей</button>
+  </div>
   <div>
     <button class="add_button" @click="createCharacter">
       Добавить нового персонажа
@@ -33,10 +37,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useCharactersStore } from "../stores/characters";
 import { SimplifiedCharacter } from "../interfaces/character";
+import axios from "axios";
 
 const charactersStore = useCharactersStore();
 const characters = ref<SimplifiedCharacter[]>([]);
@@ -44,26 +49,40 @@ const shipData = ref<{ [key: string]: any }>({});
 
 const router = useRouter();
 
-const loadCharactersFromStore = () => {
-  characters.value = charactersStore.characters;
-  fetchAllStarships(characters.value);
-};
-
-const fetchAllStarships = async (characters: SimplifiedCharacter[]) => {
-  for (const character of characters) {
-    if (character.starships.length >= 1 && character.starships[0] !== "") {
-      const starshipUrl = character.starships[0];
-      // Ensure that the starship is not already in shipData
-      if (!shipData.value[starshipUrl]) {
-        const starship = charactersStore.starships.find(
-          (st) => st.url === starshipUrl
-        );
-        if (starship) {
-          shipData.value[starshipUrl] = starship;
-        }
-      }
+const loadCharactersFromStore = async () => {
+  if (charactersStore.characters.length === 0) {
+    // Если данных нет, загружаем их из API
+    await charactersStore.loadStarships();
+    const fetchedCharacters = await fetchCharactersFromApi();
+    if (fetchedCharacters.length > 0) {
+      charactersStore.setCharacters(fetchedCharacters);
     }
   }
+
+  characters.value = charactersStore.characters;
+  prepareStarshipData();
+};
+
+const fetchCharactersFromApi = async (): Promise<SimplifiedCharacter[]> => {
+  try {
+    const response = await axios.get("https://swapi.dev/api/people/");
+    return response.data.results.map((character: any) => ({
+      id: Date.now() + Math.random(),
+      name: character.name,
+      birth_year: character.birth_year,
+      starships: character.starships,
+    }));
+  } catch (error) {
+    console.error("Error fetching characters:", error);
+    return [];
+  }
+};
+
+const prepareStarshipData = () => {
+  shipData.value = charactersStore.starships.reduce((acc, starship) => {
+    acc[starship.url] = starship;
+    return acc;
+  }, {});
 };
 
 const editCharacter = (id: number) => {
@@ -80,10 +99,13 @@ const removeCharacter = (id: number) => {
 };
 
 onMounted(() => {
-  if (charactersStore.characters.length > 0) {
-    loadCharactersFromStore();
-  } else {
+  loadCharactersFromStore();
+});
+
+watch(
+  () => charactersStore.characters,
+  () => {
     loadCharactersFromStore();
   }
-});
+);
 </script>
